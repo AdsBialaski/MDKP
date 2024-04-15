@@ -1,0 +1,41 @@
+services:
+  frontend:
+    container_name: mdkp-frontend
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+      - "3000:3000"
+    networks:
+      - net
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/
+          target: /app/
+        - action: rebuild
+          path: ./frontend/package.json
+    environment:
+      - API_SERVER_ADDRESS=http://backend:8000
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - net
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/
+          target: /app/
+
+networks:
+  net:
+    name: net
